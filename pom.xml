@@ -18,8 +18,11 @@
         <java.version>1.8</java.version>
         <maven.compiler.version>3.7.0</maven.compiler.version>
         <maven-surefire.version>3.0.0-M4</maven-surefire.version>
+        <maven-failsafe.version>3.0.0-M4</maven-failsafe.version>
         <karate.version>0.9.4</karate.version>
         <junit5.version>5.5.0</junit5.version>
+        <skip.surefire.tests>false</skip.surefire.tests>
+        <skip.failsafe.tests>false</skip.failsafe.tests>
     </properties>
 
     <dependencies>
@@ -55,6 +58,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.intuit.karate</groupId>
+            <artifactId>karate-junit4</artifactId>
+            <version>${karate.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit5.version}</version>
@@ -78,6 +87,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.2.1.RELEASE</version>
+                <configuration>
+                    <classifier>exec</classifier>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,6 +97,13 @@
                 <version>${maven-surefire.version}</version>
                 <configuration>
                     <testSourceDirectory>src/test/java</testSourceDirectory>
+                    <skip>${skip.surefire.tests}</skip>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -94,6 +113,7 @@
                 <configuration>
                     <linkXRef>false</linkXRef>
                     <showSuccess>true</showSuccess>
+                    <outputDirectory>${basedir}/target/surefire-reports</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -105,16 +125,78 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
+                <executions>
+                    <execution>
+                        <id>add-integration-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>/src/integration-test/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-integration-test-resources</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>/src/integration-test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe.version}</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                    <skip>${skip.failsafe.tests}</skip>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*Test.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>  <!-- disabled site plugin to simplify build -->
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
-                <directory>${project.basedir}/src/test/resources/css</directory>
-                <targetPath>${project.build.directory}/site/css</targetPath>
+                <directory>src/test/resources/surefire-report-css</directory>
+                <targetPath>${project.build.directory}/surefire-reports/css</targetPath>
                 <includes>
                     <include>*.css</include>
                 </includes>
             </resource>
         </resources>
     </build>
-
 </project>
