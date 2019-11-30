@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <maven.compiler.version>3.7.0</maven.compiler.version>
+        <maven-surefire.version>3.0.0-M4</maven-surefire.version>
         <karate.version>0.9.4</karate.version>
         <junit5.version>5.5.0</junit5.version>
     </properties>
@@ -78,7 +79,42 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.2.1.RELEASE</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire.version}</version>
+                <configuration>
+                    <testSourceDirectory>src/test/java</testSourceDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire.version}</version>
+                <configuration>
+                    <linkXRef>false</linkXRef>
+                    <showSuccess>true</showSuccess>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-test-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/test/resources/css</directory>
+                <targetPath>${project.build.directory}/site/css</targetPath>
+                <includes>
+                    <include>*.css</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
 </project>
