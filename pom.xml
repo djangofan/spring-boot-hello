@@ -101,9 +101,6 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -138,7 +135,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>/src/integration-test/java</source>
+                                <source>/src/test-it/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -151,7 +148,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>/src/integration-test/resources</directory>
+                                    <directory>/src/test-it/resources</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -165,17 +162,18 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <skip>${skip.failsafe.tests}</skip>
-                    <includes>
-                        <include>**/*IT.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*Test.java</exclude>
-                    </excludes>
+                    <testSourceDirectory>src/test-it/java</testSourceDirectory>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
                             <goal>verify</goal>
                         </goals>
                     </execution>
@@ -189,14 +187,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/test/resources/surefire-report-css</directory>
-                <targetPath>${project.build.directory}/surefire-reports/css</targetPath>
-                <includes>
-                    <include>*.css</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 </project>
